@@ -1,13 +1,16 @@
 <?php 
     //Lenght Constants
-    define("MILIMETROS_A_PULGADAS",0.0394);
-    define("CENTIMETROS_A_PULGADAS",0.394);
+    define("MILIMETROS_A_METROS",0.001);
+    define("CENTIMETROS_A_METROS",0.01);
+    define("KILOMETROS_A_METROS",1000); 
+    define("METROS_A_PULGADAS",39.4);
     define("METROS_A_PIES",3.2808);
     define("METROS_A_YARDAS",1.0936);
     define("METROS_A_BRAZAS",0.5468);
     define("KILOMETROS_A_MILLAS_TIERRA",0.6214);
     define("KILOMETROS_A_MILLAS_MAR_EU",0.5399);
     define("KILOMETROS_A_MILLAS_MAR_RU",0.5396);
+
     //Types of conversion
     $conversion_types_array = array("Longitud","Superficie","Volumen","Capacidad","Peso","Velocidad Potencia");
     //Measures array
@@ -27,6 +30,14 @@
         return (isset($_GET["metric-type"]))? true : false;
     }
 
+    function isConversionFormSubmitted(){
+        return (isset($_GET["metric-type"]) && isset($_GET["from-measure"]) && isset($_GET["from-measure-value"]))? true : false;
+    }
+
+    function areMeasuresSelected(){
+        return isset($_GET["from-measure"]) && isset($_GET["to-measure"])? true : false;
+    }
+
     function createConversionSelect(){
         global $conversion_types_array;
         foreach($conversion_types_array as $conversion_type){
@@ -40,37 +51,158 @@
         }
     }
 
+    function areMetricsSelectedEqual($from_measure, $to_measure){
+        return ($from_measure === $to_measure)? true : false;
+    }
+
+    function calculateLenghtConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_kilometers;
+        $result_in_meters;
+        if($from_measure === "Millas Tierra" || $from_measure === "Millas Mar (EU)" || $from_measure === "Millas Mar (RU)"){
+            if($from_measure === "Millas Tierra" ) {  $result_in_kilometers = ($from_measure_value / KILOMETROS_A_MILLAS_TIERRA); }
+            else if($from_measure === "Millas Mar (EU)") { $result_in_kilometers = ($from_measure_value / KILOMETROS_A_MILLAS_MAR_EU); }
+            else if($from_measure === "Millas Mar (RU)") { $result_in_kilometers = ($from_measure_value / KILOMETROS_A_MILLAS_MAR_RU); }
+
+            if($to_measure === "Kilómetros") { return $result_in_kilometers; }
+            else if($to_measure === "Millas Tierra" || $to_measure === "Millas Mar (EU)" || $to_measure === "Millas Mar (RU)" ){
+                //Para cuando el to son igual millas
+                if($to_measure === "Millas Tierra")         { return ($result_in_kilometers * KILOMETROS_A_MILLAS_TIERRA); }
+                else if($to_measure === "Millas Mar (EU)")  { return ($result_in_kilometers * KILOMETROS_A_MILLAS_MAR_EU); }
+                else                                        { return ($result_in_kilometers * KILOMETROS_A_MILLAS_MAR_RU); }
+            }
+            else{
+                $result_in_meters = ( $result / KILOMETROS_A_METROS );
+                if($to_measure === "Milímetros")        { return ( $result_in_meters / MILIMETROS_A_METROS ); }
+                else if($to_measure === "Centrímetros") { return ( $result_in_meters / CENTIMETROS_A_METROS );}
+                else if($to_measure === "Pulgadas")     { return ( $result_in_meters * METROS_A_PULGADAS );   }
+                else if($to_measure === "Pies")         { return ( $result_in_meters * METROS_A_PIES );       }
+                else if($to_measure === "Yardas")       { return ( $result_in_meters * METROS_A_YARDAS );     }
+                else if($to_measure === "Brazas")       { return ( $result_in_meters * METROS_A_BRAZAS );     }
+                else{ /*Cuando el to sean metros*/       return    $result_in_meters;                         }
+             }
+        }
+        else{
+            if($from_measure === "Milímetros")          { $result_in_meters = $from_measure_value * MILIMETROS_A_METROS;    }
+            else if($from_measure === "Centrímetros")   { $result_in_meters = $from_measure_value * CENTIMETROS_A_METROS;   }
+            else if($from_measure === "Metros")         { $result_in_meters = $from_measure_value;                          }
+            else if($from_measure === "Kilómetros")     { $result_in_meters = $from_measure_value / KILOMETROS_A_METROS;    }
+            else if($from_measure === "Pulgadas")       { $result_in_meters = $from_measure_value / METROS_A_PULGADAS;      }
+            else if($from_measure === "Pies")           { $result_in_meters = $from_measure_value / METROS_A_PIES;          }
+            else if($from_measure === "Yardas")         { $result_in_meters = $from_measure_value / METROS_A_YARDAS;        }
+            else if($from_measure === "Brazas")         { $result_in_meters = $from_measure_value / METROS_A_BRAZAS;        }
+
+            if($to_measure === "Millas Tierra" || $to_measure === "Millas Mar (EU)" || $to_measure === "Millas Mar (RU)"){
+                $result_in_kilometers = $result_in_meters / KILOMETROS_A_METROS;
+                if($to_measure === "Millas Tierra")         { return ($result_in_kilometers * KILOMETROS_A_MILLAS_TIERRA); }
+                else if($to_measure === "Millas Mar (EU)")  { return ($result_in_kilometers * KILOMETROS_A_MILLAS_MAR_EU); }
+                else                                        { return ($result_in_kilometers * KILOMETROS_A_MILLAS_MAR_RU); }
+            }
+            else{
+                if($to_measure === "Milímetros")        { return ( $result_in_meters / MILIMETROS_A_METROS ); }
+                else if($to_measure === "Centrímetros") { return ( $result_in_meters / CENTIMETROS_A_METROS );}
+                else if($to_measure === "Kilómetros")   { return ( $result_in_meters / KILOMETROS_A_METROS);  }
+                else if($to_measure === "Pulgadas")     { return ( $result_in_meters * METROS_A_PULGADAS );   }
+                else if($to_measure === "Pies")         { return ( $result_in_meters * METROS_A_PIES );       }
+                else if($to_measure === "Yardas")       { return ( $result_in_meters * METROS_A_YARDAS );     }
+                else if($to_measure === "Brazas")       { return ( $result_in_meters * METROS_A_BRAZAS );     }
+                else{ /*Cuando el to sean metros*/       return    $result_in_meters;                         }
+            }
+        }
+    }
+
     function showsConverterForm(){
-        if(isMetricTypeSelected()){
+        if(isConversionFormSubmitted()){
+            $conversion_result;
+            $from_measure       = $_GET["from-measure"];
+            $to_measure         = $_GET["to-measure"];
+            $from_measure_value = $_GET["from-measure-value"];
+            $from_select        = 1;
+            $to_select          = 2;
+            
+            if(areMetricsSelectedEqual($from_measure,$to_measure)){
+                $conversion_result = $from_measure_value; 
+            }
+            else{
+                switch ($_GET["metric-type"]){
+                    case "Longitud":
+                        $conversion_result = calculateLenghtConversion($from_measure,$from_measure_value,$to_measure);
+                        break;
+                    case "Superficie":
+                        
+                        break;
+                    case "Volumen":
+                        
+                        break;
+                    case "Capacidad":
+                        
+                        break;
+                    case "Peso":
+                        
+                        break;
+                    case "Velocidad Potencia":
+                        
+                        break;
+                }
+            }
+            
             echo "<form action='" . $_SERVER["PHP_SELF"] ."' method='get'>";
             echo "<div class='form-row'>";
             echo "<div class='form-group col-md-2'>";
             echo "<label for='from-measure'>De:</label>";
             echo "<select class='form-control' id='from-measure' name='from-measure'>";
-            echo createWeightAndMeasureSelect();
+            echo createWeightAndMeasureSelect($from_select);
             echo "</select>";
             echo "</div>";
             echo "<div class='form-group col-md-2'>";
             echo "<label for='from-measure-value'>Valor:</label>";
-            echo "<input type='number' class='form-control' id='from-measure-value'>";
+            echo "<input type='number' class='form-control' id='from-measure-value' name='from-measure-value' value=". $_GET["from-measure-value"] .">";
             echo "</div>";
             echo "<div class='form-group col-md-2'>";
             echo "<label for='to-measure'>A:</label>";
             echo "<select class='form-control' id='to-measure' name='to-measure'>";
-            echo createWeightAndMeasureSelect();
+            echo createWeightAndMeasureSelect($to_select);
             echo "</select>";
             echo "</div>";
             echo "<div class='form-group col-md-2'>";
             echo "<label for='to-measure-value'>Valor:</label>";
-            echo "<input type='number' class='form-control' id='to-measure-value'>";
+            echo "<input type='number' class='form-control' id='to-measure-value' name='to-measure-value' value=". $conversion_result ." disabled>";
             echo "</div>";
             echo "</div>";
+            echo "<input id='metric' name='metric-type' type='hidden' value=". $_GET["metric-type"] . ">";
+            echo "<button type='submit' class='btn btn-primary'>Calcular</button>";
+            echo "</form>";
+        }
+        else if(isMetricTypeSelected()){
+            echo "<form action='" . $_SERVER["PHP_SELF"] ."' method='get'>";
+            echo "<div class='form-row'>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='from-measure'>De:</label>";
+            echo "<select class='form-control' id='from-measure' name='from-measure'>";
+            echo createWeightAndMeasureSelect($from_select);
+            echo "</select>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='from-measure-value'>Valor:</label>";
+            echo "<input type='number' class='form-control' id='from-measure-value' name='from-measure-value'>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='to-measure'>A:</label>";
+            echo "<select class='form-control' id='to-measure' name='to-measure'>";
+            echo createWeightAndMeasureSelect($to_select);
+            echo "</select>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='to-measure-value'>Valor:</label>";
+            echo "<input type='number' class='form-control' id='to-measure-value' name='to-measure-value' disabled>";
+            echo "</div>";
+            echo "</div>";
+            echo "<input id='metric' name='metric-type' type='hidden' value=". $_GET["metric-type"] . ">";
             echo "<button type='submit' class='btn btn-primary'>Calcular</button>";
             echo "</form>";
         }
     }
 
-    function createWeightAndMeasureSelect(){
+    function createWeightAndMeasureSelect($select_type){
         global $lenght_measure_array;
         global $area_measure_array;
         global $volume_measure_array;
@@ -100,8 +232,22 @@
                     break;
             }
             //Fill selects
-            foreach($data_array as $data){    
-                echo "<option>" . $data ."</option>";
+            foreach($data_array as $data){
+                if(areMeasuresSelected()){
+                    echo "<option ";
+                    if($select_type == 1){
+                        echo $_GET["from-measure"] === $data ? "selected=selected" : "";
+                    }
+                    else{
+                        echo $_GET["to-measure"] === $data ? "selected=selected" : "";
+                    }
+                    echo ">". $data;
+                }
+                else{
+                    echo "<option>" . $data;
+                }
+
+                echo "</option>";
             }
         }
     }
@@ -123,7 +269,7 @@
 <body>
     <header>
         <nav class="navbar navbar-dark bg-dark">
-            <span class="navbar-brand mb-0 h1">Metric Converter</span>
+            <span class="navbar-brand mb-0 h1">Convertido de Medidas</span>
         </nav>
     </header>
     <main class="container">
