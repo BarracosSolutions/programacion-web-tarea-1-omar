@@ -40,6 +40,36 @@
         }
     }
 
+    function showsConverterForm(){
+        if(isMetricTypeSelected()){
+            echo "<form action='" . $_SERVER["PHP_SELF"] ."' method='get'>";
+            echo "<div class='form-row'>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='from-measure'>De:</label>";
+            echo "<select class='form-control' id='from-measure' name='from-measure'>";
+            echo createWeightAndMeasureSelect();
+            echo "</select>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='from-measure-value'>Valor:</label>";
+            echo "<input type='number' class='form-control' id='from-measure-value'>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='to-measure'>A:</label>";
+            echo "<select class='form-control' id='to-measure' name='to-measure'>";
+            echo createWeightAndMeasureSelect();
+            echo "</select>";
+            echo "</div>";
+            echo "<div class='form-group col-md-2'>";
+            echo "<label for='to-measure-value'>Valor:</label>";
+            echo "<input type='number' class='form-control' id='to-measure-value'>";
+            echo "</div>";
+            echo "</div>";
+            echo "<button type='submit' class='btn btn-primary'>Calcular</button>";
+            echo "</form>";
+        }
+    }
+
     function createWeightAndMeasureSelect(){
         global $lenght_measure_array;
         global $area_measure_array;
@@ -69,7 +99,6 @@
                     $data_array = $speed_measure_array;
                     break;
             }
-
             //Fill selects
             foreach($data_array as $data){    
                 echo "<option>" . $data ."</option>";
@@ -111,26 +140,10 @@
                 <button type="submit" class="btn btn-primary">Check</button>
             </form>
         </section>
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
-            <div class="form-group">
-                <label for="from-measure"> De:
-                <select class="form-control" id="from-measure" name="from-measure">
-                    <?php 
-                        createWeightAndMeasureSelect();
-                    ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="to-measure"> A:
-                <select class="form-control" id="to-measure" name="to-measure">
-                    <?php 
-                        createWeightAndMeasureSelect();
-                    ?>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Calcular</button>
-        </form>
-        <section>
+        <section style="margin: 5%;">
+            <?php
+                showsConverterForm();
+            ?>
         </section>
     </main>
     <footer class=".bg-secondary" style="position:absolute; width: 100%; bottom:0;">
