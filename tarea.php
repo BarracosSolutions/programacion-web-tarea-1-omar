@@ -11,18 +11,26 @@
     define("KILOMETROS_A_MILLAS_MAR_EU",0.5399);
     define("KILOMETROS_A_MILLAS_MAR_RU",0.5396);
 
+    //Area constants
+    define("CENTIMETROS3_A_METROS3",0.000001);
+    define("METROS3_A_PIES3",35.3145);
+    define("METROS3_A_YARDAS3",1.3079);
+    define("METROS3_A_GALONES_EU",264.178);
+    define("METROS3_A_GALONES_RU",219.976);
+    define("METROS3_A_PULGADAS3",61000);
+
     //Types of conversion
     $conversion_types_array = array("Longitud","Superficie","Volumen","Capacidad","Peso","Velocidad Potencia");
     //Measures array
     $lenght_measure_array   = array("Milímetros","Centrímetros","Metros","Kilómetros","Pulgadas","Pies",
                                     "Yardas","Brazas","Millas Tierra","Millas Mar (EU)","Millas Mar (RU)");
-    $area_measure_array     = array("Milímetros&sup2;","Centímetros&sup2;","Metros&sup2;","Kilómetros&sup2;",
-                                    "Hectáreas&sup2;","Pulgadas&sup2;","Pies&sup2;","Yardas&sup2;","Acres","Millas&sup2;");
-    $volume_measure_array   = array("Centímetros&sup3;","Metros&sup3;","Pulgadas&sup3;","Pies&sup3;","Yardas&sup3;",
+    $area_measure_array     = array("Milímetros²","Centímetros²","Metros²","Kilómetros²",
+                                    "Hectáreas²","Pulgadas²","Pies²","Yardas²","Acres","Millas²");
+    $volume_measure_array   = array("Centímetros³","Metros³","Pulgadas³","Pies³","Yardas³",
                                     "Galones (EU)","Galones (RU)");
-    $capacity_measure_array = array("Litros","Hectolitros","Pulgadas&sup3;","Pies&sup3;","Galones (EU)","Pintas líquidas",
+    $capacity_measure_array = array("Litros","Hectolitros","Pulgadas³","Pies³","Galones (EU)","Pintas líquidas",
                                     "Quarter líquidas", "Galones (EU)", "Galones (RU)", "Bushels (EU)", "Bushels (RU)");
-    $weight_measure_array   = array("Gramos", "Kilogramos","Toneladas&sup3;","Onzas (Av.)","Onzas (Troy)","Libras (Av.)",
+    $weight_measure_array   = array("Gramos", "Kilogramos","Toneladas³","Onzas (Av.)","Onzas (Troy)","Libras (Av.)",
                                     "Libras (Troy)","Libras","Toneladas (EU)","Toneladas (RU)");
     $speed_measure_array    = array("Kilómetros hora","Caballos de vapor","Millas por hora","Nudos","Caballos de fuerza"); 
     
@@ -110,6 +118,47 @@
         }
     }
 
+    function calculateAreaConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_kilometers2;
+        $result_in_meters2;
+
+    }
+
+    function calculateVolumeConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_meters3;
+        if($from_measure === "Centímetros³")        { $result_in_meters3    = $from_measure_value * CENTIMETROS3_A_METROS3;}
+        else if($from_measure === "Pulgadas³")      { $result_in_meters     = $from_measure_value * METROS3_A_PULGADAS3;}
+        else if($from_measure === "Pies³")          { $result_in_meters3    = $from_measure_value * METROS3_A_PIES3;}
+        else if($from_measure === "Yardas³")        { $result_in_meters3    = $from_measure_value * METROS3_A_YARDAS3;}
+        else if($from_measure === "Galones (EU)")   { $result_in_meters3    = $from_measure_value * METROS3_A_GALONES_EU;}
+        else if($from_measure === "Galones (RU)")   { $result_in_meters3    = $from_measure_value * METROS3_A_GALONES_RU;}
+        else /*Cuando el from es metros*/           { $result_in_meters3    = $from_measure_value;}
+
+        if($to_measure === "Metros³")               { return $result_in_meters3; }
+        else if($to_measure === "Centímetros³")     { return $result_in_meters3 / CENTIMETROS3_A_METROS3;}
+        else if($to_measure === "Pulgadas³")        { return $result_in_meters3 / METROS3_A_PULGADAS3;}
+        else if($to_measure === "Pies³")            { return $result_in_meters3 / METROS3_A_PIES3;}
+        else if($to_measure === "Yardas³")          { return $result_in_meters3 / METROS3_A_YARDAS3;}
+        else if($to_measure === "Galones (EU)")     { return $result_in_meters3 / METROS3_A_GALONES_EU;}
+        else if($to_measure === "Galones (RU)")     { return $result_in_meters3 / METROS3_A_GALONES_RU;}
+
+    }
+
+    function calculateCapacityConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_kilometers2;
+        $result_in_meters2;
+    }
+
+    function calculateWeightConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_kilometers2;
+        $result_in_meters2;
+    }
+
+    function calculateSpeedConversion($from_measure,$from_measure_value,$to_measure){
+        $result_in_kilometers2;
+        $result_in_meters2;
+    }
+
     function showsConverterForm(){
         if(isConversionFormSubmitted()){
             $conversion_result;
@@ -128,19 +177,19 @@
                         $conversion_result = calculateLenghtConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                     case "Superficie":
-                        
+                        $conversion_result = calculateAreaConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                     case "Volumen":
-                        
+                        $conversion_result = calculateVolumeConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                     case "Capacidad":
-                        
+                        $conversion_result = calculateCapacityConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                     case "Peso":
-                        
+                        $conversion_result = calculateWeightConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                     case "Velocidad Potencia":
-                        
+                        $conversion_result = calculateSpeedConversion($from_measure,$from_measure_value,$to_measure);
                         break;
                 }
             }
