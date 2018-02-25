@@ -121,6 +121,7 @@
     function calculateAreaConversion($from_measure,$from_measure_value,$to_measure){
         $result_in_kilometers2;
         $result_in_meters2;
+        return 0;
 
     }
 
@@ -147,16 +148,19 @@
     function calculateCapacityConversion($from_measure,$from_measure_value,$to_measure){
         $result_in_kilometers2;
         $result_in_meters2;
+        return 0;
     }
 
     function calculateWeightConversion($from_measure,$from_measure_value,$to_measure){
         $result_in_kilometers2;
         $result_in_meters2;
+        return 0;
     }
 
     function calculateSpeedConversion($from_measure,$from_measure_value,$to_measure){
         $result_in_kilometers2;
         $result_in_meters2;
+        return 0;
     }
 
     function showsConverterForm(){
